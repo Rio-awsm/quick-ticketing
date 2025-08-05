@@ -18,7 +18,6 @@ export async function POST(request: NextRequest) {
     const db = await getDatabase();
     const ticketsCollection = db.collection<Ticket>('tickets');
 
-    // Check if user already exists (by name, email, or phone)
     const existingTicket = await ticketsCollection.findOne({
       $or: [
         { name: name.trim() },

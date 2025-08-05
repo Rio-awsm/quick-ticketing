@@ -1,11 +1,21 @@
 'use client';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Ticket } from '@/types';
-import { ArrowLeft, Search, Settings, UserCheck, Users, UserX } from 'lucide-react';
+import { ArrowLeft, Search, Settings, Trash2, UserCheck, Users, UserX } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -18,6 +28,11 @@ export default function AdminPage() {
   const [sortBy, setSortBy] = useState<'name' | 'createdAt' | 'type'>('createdAt');
   const [filterBy, setFilterBy] = useState<'all' | 'present' | 'absent'>('all');
   const [message, setMessage] = useState('');
+  const [deleteDialog, setDeleteDialog] = useState<{
+    open: boolean;
+    ticket: Ticket | null;
+  }>({ open: false, ticket: null });
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +40,39 @@ export default function AdminPage() {
       setIsAuthenticated(true);
       setMessage('');
       fetchTickets();
+    }
+  };
+
+  const deleteTicket = async (ticketId: string) => {
+    setDeleteLoading(true);
+    try {
+      const response = await fetch(`/api/admin?id=${ticketId}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        setTickets(prev => prev.filter(ticket => ticket._id !== ticketId));
+        setMessage(`Ticket deleted successfully`);
+        setDeleteDialog({ open: false, ticket: null });
+      } else {
+        setMessage('Failed to delete ticket');
+      }
+    } catch (err) {
+      setMessage('Network error');
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const handleDeleteClick = (ticket: Ticket) => {
+    setDeleteDialog({ open: true, ticket });
+  };
+
+  const confirmDelete = () => {
+    if (deleteDialog.ticket?._id) {
+      deleteTicket(deleteDialog.ticket._id);
     } else {
       setMessage('Incorrect password');
     }
@@ -327,6 +375,14 @@ export default function AdminPage() {
                                 Mark Absent
                               </Button>
                             )}
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => handleDeleteClick(ticket)}
+                              className="ml-1"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
                           </div>
                         </td>
                       </tr>
@@ -343,6 +399,37 @@ export default function AdminPage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog 
+          open={deleteDialog.open} 
+          onOpenChange={(open) => setDeleteDialog({ open, ticket: null })}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Ticket</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete the ticket for{' '}
+                <strong>{deleteDialog.ticket?.name}</strong>? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel 
+                onClick={() => setDeleteDialog({ open: false, ticket: null })}
+                disabled={deleteLoading}
+              >
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={confirmDelete}
+                disabled={deleteLoading}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {deleteLoading ? 'Deleting...' : 'Delete'}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );

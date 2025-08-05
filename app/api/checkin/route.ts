@@ -17,7 +17,6 @@ export async function POST(request: NextRequest) {
     const db = await getDatabase();
     const ticketsCollection = db.collection<Ticket>('tickets');
 
-    // Find ticket by code
     const ticket = await ticketsCollection.findOne({ ticketCode: ticketCode.trim() });
 
     if (!ticket) {
@@ -27,7 +26,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Mark as present
     const updateResult = await ticketsCollection.updateOne(
       { ticketCode: ticketCode.trim() },
       { 
