@@ -1,4 +1,3 @@
-```markdown
 # 🎫 Quick Ticketing
 
 A modern and intuitive frontend application built with Next.js for streamlined ticket management.
@@ -24,15 +23,10 @@ A modern and intuitive frontend application built with Next.js for streamlined t
 `@radix-ui/react-alert-dialog` for critical user actions.
 -   **Select Component:** Enhanced select component with `@radix-ui/react-select` for efficient data selection.
 
-## 📸 Screenshots
-
-*(Replace with actual screenshots or GIFs of the UI)*
-
 | Ticket List | Ticket Details |  | -------------------------------------------- | -------------------------------------------- |
 | --- | --- | --- |
 | ![Ticket List](public/screenshot_list.png) | ![Ticket Details](public/screenshot_details.png) |
 
-*(Add actual screenshots to the `public` directory and update the paths above)*
 
 ## 💻 Technologies & Dependencies
 
@@ -253,4 +247,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 -   Powered by [Next.js](https://nextjs.org/)
 -   UI Components by [Radix UI](https://www.radix-ui.com/)
 -   Styled with [Tailwind CSS](https://tailwindcss.com/)
-```
